@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CV</title>
+  <meta property="og:title" content="Евгений — Unity Developer">
+  <meta property="og:description" content="Interactive CV">
+  <meta property="og:type" content="website">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #1a1a2e;
+      overflow: hidden;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    #unity-canvas {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      display: block;
+    }
+
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      z-index: 10;
+      transition: opacity 0.4s ease;
+    }
+
+    #loading.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-content {
+      text-align: center;
+    }
+
+    .loading-title {
+      font-size: 1.4rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      margin-bottom: 24px;
+      color: #f0f0f0;
+    }
+
+    #progress-bar {
+      width: 220px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    #progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6c63ff, #48c6ef);
+      border-radius: 2px;
+      transition: width 0.25s ease;
+    }
+
+    #progress-text {
+      margin-top: 12px;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.35);
+      letter-spacing: 0.1em;
+    }
+
+    #error-message {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    #error-message h2 {
+      font-weight: 400;
+      margin-bottom: 1rem;
+      color: #ff6b6b;
+    }
+
+    #error-message p {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+      max-width: 400px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="loading-content">
+      <div class="loading-title">Loading</div>
+      <div id="progress-bar"><div id="progress-fill"></div></div>
+      <div id="progress-text">0%</div>
+    </div>
+  </div>
+
+  <div id="error-message">
+    <div>
+      <h2>WebGL is not supported</h2>
+      <p>Your browser or device does not support WebGL. Please try opening this page in a modern desktop browser (Chrome, Firefox, Edge).</p>
+    </div>
+  </div>
+
+  <canvas id="unity-canvas" width=540 height=960 tabindex="-1"></canvas>
+
+  <script>
+    var canvas = document.getElementById("unity-canvas");
+    var loading = document.getElementById("loading");
+    var progressFill = document.getElementById("progress-fill");
+    var progressText = document.getElementById("progress-text");
+
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/eugene.migursky.loader.js";
+    var config = {
+      arguments: [],
+      dataUrl: buildUrl + "/eugene.migursky.data.unityweb",
+      frameworkUrl: buildUrl + "/eugene.migursky.framework.js.unityweb",
+      codeUrl: buildUrl + "/eugene.migursky.wasm.unityweb",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "eugene.migursky",
+      productName: "CV",
+      productVersion: "0.1.0",
+    };
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      var meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+      document.getElementsByTagName('head')[0].appendChild(meta);
+    }
+
+    var script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = function () {
+      createUnityInstance(canvas, config, function (progress) {
+        var pct = Math.round(progress * 100);
+        progressFill.style.width = pct + "%";
+        progressText.textContent = pct + "%";
+      }).then(function (instance) {
+        loading.classList.add("fade-out");
+        setTimeout(function () { loading.style.display = "none"; }, 400);
+      }).catch(function (message) {
+        var err = document.getElementById("error-message");
+        err.style.display = "flex";
+        err.querySelector("p").textContent = message;
+        loading.style.display = "none";
+      });
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>
