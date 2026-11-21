@@ -129,16 +129,19 @@
     var progressText = document.getElementById("progress-text");
 
     var buildUrl = "Build";
-    var loaderUrl = buildUrl + "/eugene.migursky.loader.js";
+    var loaderUrl = buildUrl + "/f86a873b19cb426e0b297394a87f0685.loader.js";
     var config = {
       arguments: [],
-      dataUrl: buildUrl + "/eugene.migursky.data.unityweb",
-      frameworkUrl: buildUrl + "/eugene.migursky.framework.js.unityweb",
-      codeUrl: buildUrl + "/eugene.migursky.wasm.unityweb",
+      dataUrl: buildUrl + "/a259baf9a0a581b831b4f016d0dc8d0c.data.unityweb",
+      frameworkUrl: buildUrl + "/b8dc8b97c34056367cb402d11f698bbc.framework.js.unityweb",
+      codeUrl: buildUrl + "/3b65e33efa367717cbb11e7a6178eea6.wasm.unityweb",
       streamingAssetsUrl: "StreamingAssets",
       companyName: "eugene.migursky",
       productName: "CV",
       productVersion: "0.1.0",
+      // Ограничиваем плотность пикселей: на телефонах с DPR 3 канвас иначе рисует в 2.25 раза больше пикселей.
+      // Раскладка UI не меняется (Panel Settings: Scale With Screen Size), только резкость.
+      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
     };
 
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
